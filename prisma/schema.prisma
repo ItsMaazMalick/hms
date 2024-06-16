@@ -92,7 +92,7 @@ model StudentRegistration {
   nationality          String
   address              String
   mobileNumber         String
-  landlineNumber       String
+  landlineNumber       String?
   emergencyContactName String
   emergencyContact     String
   bed                  BedAssign[]
@@ -115,7 +115,7 @@ model GuestRegistration {
   nationality          String
   address              String
   mobileNumber         String
-  landlineNumber       String
+  landlineNumber       String?
   accompaniedBy        String
   emergencyContactName String
   emergencyContact     String

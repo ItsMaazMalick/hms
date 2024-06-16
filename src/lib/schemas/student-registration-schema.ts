@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const requiredString = z.string().min(1, "Required field");
+const optionalString = z.string().optional();
 
 export const studentRegistrationSchema = z.object({
   registrationNumber: requiredString,
@@ -15,7 +16,7 @@ export const studentRegistrationSchema = z.object({
   nationality: requiredString,
   address: requiredString,
   mobileNumber: requiredString,
-  landlineNumber: requiredString,
+  landlineNumber: optionalString,
   emergencyContactName: requiredString,
   emergencyContact: requiredString,
 });

@@ -48,7 +48,13 @@ export default function CheckoutForm({ data }: any) {
       setError("Please collect complete amount");
       form.reset();
     } else {
-      const result = await checkout(values, data.id);
+      const result = await checkout(
+        values,
+        data.totalPayment,
+        data.advancePayment,
+        data.remainingPayment,
+        data.id
+      );
       form.reset();
       setError(result?.error);
       setSuccess(result?.success);

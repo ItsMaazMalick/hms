@@ -179,7 +179,7 @@ export default function GuestRegistrationForm({ guestRegistrations }: any) {
                 control={form.control}
               />
               <TextInput
-                label="Landline Number"
+                label="Landline Number (Optional)"
                 name="landlineNumber"
                 control={form.control}
               />

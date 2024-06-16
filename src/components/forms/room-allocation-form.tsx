@@ -32,6 +32,7 @@ import {
 } from "../ui/select";
 import { FormError } from "./FormError";
 import { FormSuccess } from "./FormSuccess";
+import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
 export default function RoomAllocationForm({
   halls,
@@ -111,11 +112,12 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
   const router = useRouter();
   const [floorArray, setFloorArray] = useState([]);
   const [roomsArray, setRoomsArray] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState();
   const [bedsArray, setBedsArray] = useState([]);
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  const [startDate, setStartDate] = useState<Date | undefined>();
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [selectedBedPrice, setSelectedBedPrice] = useState<number>(0);
   const [advancePayment, setAdvancePayment] = useState<number>(0);
@@ -146,23 +148,9 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
   }
 
   const calculateAmount = () => {
-    // CALCULATE NO OF DAYS IN CURRENT MONTH
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    const firstDayOfNextMonth = new Date(year, month + 1, 1);
-    const lastDayOfMonth = new Date(firstDayOfNextMonth.getTime() - 1);
-    const numberOfDays = lastDayOfMonth.getDate();
-
-    const differenceInMs =
-      endDate && startDate ? endDate.getTime() - startDate.getTime() : 0;
-    const daysDifference = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
-    console.log(rooms);
-    const totalAmount = Math.round(
-      daysDifference * (selectedBedPrice / numberOfDays)
-    );
-    console.log(selectedBedPrice);
-    setTotalAmount(totalAmount);
+    const amount = calculateTotalAmount(startDate, endDate, selectedRoom);
+    console.log(amount);
+    setTotalAmount(amount);
     setIsShow(false);
   };
 
@@ -291,6 +279,7 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                         const roomObject = rooms.find(
                           (room: any) => room.id === selectedRoom
                         );
+                        setSelectedRoom(roomObject);
                         const price = roomObject.price.find(
                           (price: any) => price.isAvailable === true
                         );
@@ -357,8 +346,7 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                         onChange={(e: any) => {
                           const selectedDate = e.target.value;
                           setIsShow(true);
-                          const formatedDate = new Date(selectedDate);
-                          setStartDate(formatedDate);
+                          setStartDate(selectedDate);
                           fieldValues.onChange(selectedDate);
                         }}
                       />
@@ -379,8 +367,7 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                         onChange={(e: any) => {
                           const selectedDate = e.target.value;
                           setIsShow(true);
-                          const formatedDate = new Date(selectedDate);
-                          setEndDate(formatedDate);
+                          setEndDate(selectedDate);
                           fieldValues.onChange(selectedDate);
                         }}
                       />

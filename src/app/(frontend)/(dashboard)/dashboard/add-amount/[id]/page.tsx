@@ -1,5 +1,5 @@
 import { getAssignBed } from "@/actions/room-allocation";
-import { getRoombyBed } from "@/actions/rooms";
+import AddAmountForm from "@/components/forms/add-amount-form.tsx";
 import ExtendTimeForm from "@/components/forms/extend-time-form";
 import TopContainer from "@/components/header/TopContainer";
 import { Input } from "@/components/ui/input";
@@ -16,15 +16,10 @@ export default async function ExtendDatePage({
   if (!bed) {
     return redirect("/dashboard");
   }
-
-  console.log(bed);
-
-  const room = await getRoombyBed(bed.bedId);
-
   return (
     <div className="w-full">
       <TopContainer
-        title="Extend Date"
+        title="Add Amount"
         link={<School size={35} className="p-1 rounded-md" />}
       />
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-primary text-primary-foreground p-2 rounded-md">
@@ -40,7 +35,7 @@ export default async function ExtendDatePage({
           <Input disabled placeholder={bed.totalPayment.toString()} />
         </div>
         <div>
-          <Label>Advance Payment</Label>
+          <Label>Amount Paid</Label>
           <Input disabled placeholder={bed.advancePayment.toString()} />
         </div>
         <div>
@@ -57,7 +52,7 @@ export default async function ExtendDatePage({
         </div>
       </div>
       {/* UPDATE */}
-      <ExtendTimeForm data={bed} room={room} />
+      <AddAmountForm data={bed} />
     </div>
   );
 }

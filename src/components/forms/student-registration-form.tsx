@@ -189,7 +189,7 @@ export default function StudentRegistrationForm({ studentRegistrations }: any) {
                 control={form.control}
               />
               <TextInput
-                label="Landline Number"
+                label="Landline Number (Optional)"
                 name="landlineNumber"
                 control={form.control}
               />

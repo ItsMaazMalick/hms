@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/db";
 import {
+  addAmountSchema,
   assignBedSchema,
   checkoutSchema,
   extendDateSchema,
@@ -217,7 +218,7 @@ export async function extendDate(
     const bedAssign = await prisma.bedAssign.update({
       where: { id },
       data: {
-        endDate: formatedEndDate.toISOString(),
+        endDate,
         totalPayment: totalPayment + existingBedAssign.totalPayment,
         advancePayment: advancePayment + existingBedAssign.advancePayment,
         remainingPayment:
@@ -237,14 +238,58 @@ export async function extendDate(
   }
 }
 
+// ADD AMOUNT
+export async function addAmount(
+  values: z.infer<typeof addAmountSchema>,
+  totalPayment: number,
+  id: string
+) {
+  const validData = addAmountSchema.safeParse(values);
+  if (!validData?.success) {
+    return { error: "Invalid data provided" };
+  }
+  const { amount, challanNumber } = validData.data;
+
+  try {
+    const existingBedAssign = await prisma.bedAssign.findUnique({
+      where: { id },
+    });
+    if (!existingBedAssign) {
+      return { error: "Invalid id provided" };
+    }
+    const bedAssign = await prisma.bedAssign.update({
+      where: { id },
+      data: {
+        advancePayment: amount + existingBedAssign.advancePayment,
+        remainingPayment: existingBedAssign.remainingPayment - amount,
+      },
+    });
+    await prisma.challan.create({
+      data: {
+        challanNumber,
+        bedAssignId: bedAssign.id,
+      },
+    });
+    revalidatePath("/dashboard");
+    return { success: "Data updated successfully" };
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+}
+
 export async function checkout(
   values: z.infer<typeof checkoutSchema>,
+  totalPayment: number,
+  advancePayment: number,
+  remainingPayment: number,
   id: string
 ) {
   const validData = checkoutSchema.safeParse(values);
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
+  const { payment, checkoutDate, challanNumber } = validData.data;
   try {
     const existingBedAssign = await prisma.bedAssign.findUnique({
       where: { id },
@@ -259,8 +304,10 @@ export async function checkout(
     const bedAssign = await prisma.bedAssign.update({
       where: { id },
       data: {
-        remainingPayment: 0,
-        endDate: values.checkoutDate,
+        totalPayment,
+        advancePayment: advancePayment + payment,
+        remainingPayment: remainingPayment - payment,
+        endDate: checkoutDate,
         isClosed: true,
       },
     });
@@ -272,7 +319,7 @@ export async function checkout(
     });
     await prisma.challan.create({
       data: {
-        challanNumber: values.challanNumber,
+        challanNumber: challanNumber,
         bedAssignId: bedAssign.id,
       },
     });

@@ -62,6 +62,32 @@ export async function getAllRooms() {
   }
 }
 
+export async function getRoombyBed(bedId: string) {
+  try {
+    const bedWithRoom = await prisma.bed.findUnique({
+      where: {
+        id: bedId,
+      },
+      include: {
+        room: {
+          include: {
+            price: true,
+          },
+        },
+      },
+    });
+
+    if (!bedWithRoom) {
+      return { error: "Bed not found" };
+    }
+
+    return bedWithRoom.room;
+  } catch (error) {
+    console.error(error);
+    return { error: "Something went wrong" };
+  }
+}
+
 export async function getAllOccupiedRooms() {
   try {
     const rooms = await prisma.room.findMany({

@@ -14,6 +14,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Link from "next/link";
+import { checkBookingDate } from "@/helpers/check-booking-date";
+import { OngoingButtons } from "@/components/allocated-rooms/ongoing-buttons";
+import { AddAmountButton } from "@/components/allocated-rooms/add-amount-button";
+import { ExpiredButton } from "@/components/allocated-rooms/expired-button";
+import { CheckoutButton } from "@/components/allocated-rooms/checkout-button";
 
 const currentDate = new Date();
 
@@ -41,7 +46,7 @@ export default async function AllocatedRooms() {
         <Table className="bg-white rounded-md shadow-md my-4">
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">Name</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Hall</TableHead>
               <TableHead>Floor</TableHead>
               <TableHead>Room</TableHead>
@@ -50,71 +55,71 @@ export default async function AllocatedRooms() {
               <TableHead>End Date</TableHead>
               <TableHead className="text-center">Days Remaining</TableHead>
               <TableHead>Total Amount</TableHead>
-              <TableHead>Advance Payment</TableHead>
+              <TableHead>Amount Paid</TableHead>
               <TableHead>Pending Amount</TableHead>
               <TableHead className="text-center">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {recentBookings?.map((recentBooking) => (
-              <TableRow key={recentBooking.id}>
-                <TableCell className="font-medium">
-                  {recentBooking.student?.fullName ||
-                    recentBooking.guest?.fullName}
-                  {/* <p className="mt-2 text-xs bg-destructive rounded-md px-1 text-white">
+            {recentBookings?.map((recentBooking) => {
+              const bookingStatus = checkBookingDate(
+                recentBooking.startDate,
+                recentBooking.endDate
+              );
+              return (
+                <TableRow key={recentBooking.id}>
+                  <TableCell className="font-medium">
+                    {recentBooking.student?.fullName ||
+                      recentBooking.guest?.fullName}
+                    {/* <p className="mt-2 text-xs bg-destructive rounded-md px-1 text-white">
                     {calculateDays(recentBooking.endDate)} days remaning
                   </p> */}
-                </TableCell>
-                <TableCell>
-                  {recentBooking.bed.room?.floor?.hall?.name}
-                </TableCell>
-                <TableCell>{recentBooking.bed.room?.floor?.name}</TableCell>
-                <TableCell>{recentBooking.bed.room?.name}</TableCell>
-                <TableCell>{recentBooking.bed?.name}</TableCell>
-                <TableCell>{recentBooking.startDate}</TableCell>
-                <TableCell>{recentBooking.endDate}</TableCell>
-                <TableCell className="text-center text-destructive font-bold rounded-md">
-                  {Number(recentBooking.startDate.split("-")[2]) <=
-                  new Date().getDate()
-                    ? calculateDays(recentBooking.endDate)
-                    : ""}
-                </TableCell>
-                <TableCell>{recentBooking.totalPayment}</TableCell>
-                <TableCell>{recentBooking.advancePayment}</TableCell>
-                <TableCell>{recentBooking.remainingPayment}</TableCell>
-                {recentBooking.isClosed ? (
-                  <TableCell className="flex justify-center items-center">
-                    <Button size={"xs"} variant={"destructive"}>
-                      Closed
-                    </Button>
                   </TableCell>
-                ) : (
-                  <TableCell className="flex items-center justify-center gap-2">
-                    {Number(recentBooking.startDate.split("-")[2]) <
-                    new Date().getDate() ? (
-                      <>
-                        <Link href={`/dashboard/extend/${recentBooking.id}`}>
-                          <Button size={"xs"} variant={"secondary"}>
-                            Extend
-                          </Button>
-                        </Link>
-                        <Link href={`/dashboard/checkout/${recentBooking.id}`}>
-                          <Button size={"xs"} variant={"destructive"}>
-                            Checkout
-                          </Button>
-                        </Link>
-                      </>
-                    ) : (
-                      <AlertComponent
-                        id={recentBooking.id}
-                        path="/dashboard/rooms-allocated"
-                        refundAmount={recentBooking.advancePayment}
-                      />
-                    )}
+                  <TableCell>
+                    {recentBooking.bed.room?.floor?.hall?.name}
                   </TableCell>
-                )}
-              </TableRow>
-            ))}
+                  <TableCell>{recentBooking.bed.room?.floor?.name}</TableCell>
+                  <TableCell>{recentBooking.bed.room?.name}</TableCell>
+                  <TableCell>{recentBooking.bed?.name}</TableCell>
+                  <TableCell>{recentBooking.startDate}</TableCell>
+                  <TableCell>{recentBooking.endDate}</TableCell>
+                  <TableCell className="text-center text-destructive font-bold rounded-md">
+                    {Number(recentBooking.startDate.split("-")[2]) <=
+                    new Date().getDate()
+                      ? calculateDays(recentBooking.endDate)
+                      : ""}
+                  </TableCell>
+                  <TableCell>{recentBooking.totalPayment}</TableCell>
+                  <TableCell>{recentBooking.advancePayment}</TableCell>
+                  <TableCell>{recentBooking.remainingPayment}</TableCell>
+                  {recentBooking.isClosed ? (
+                    <TableCell className="flex justify-center items-center">
+                      <Button size={"xs"} variant={"destructive"}>
+                        Closed
+                      </Button>
+                    </TableCell>
+                  ) : (
+                    <TableCell className="flex items-center justify-center gap-2">
+                      {bookingStatus === "ongoing" ? (
+                        <OngoingButtons recentBooking={recentBooking} />
+                      ) : bookingStatus === "expired" ? (
+                        <>
+                          <ExpiredButton />
+                          <AddAmountButton id={recentBooking.id} />
+                          <CheckoutButton id={recentBooking.id} />
+                        </>
+                      ) : (
+                        <AlertComponent
+                          id={recentBooking.id}
+                          path="/dashboard/rooms-allocated"
+                          refundAmount={recentBooking.advancePayment}
+                        />
+                      )}
+                    </TableCell>
+                  )}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

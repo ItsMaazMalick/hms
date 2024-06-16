@@ -17,6 +17,11 @@ export const extendDateSchema = z.object({
   challanNumber: z.string().min(1, "Receipt is required"),
 });
 
+export const addAmountSchema = z.object({
+  amount: z.coerce.number().min(1, "Amount is required"),
+  challanNumber: z.string().min(1, "Receipt is required"),
+});
+
 export const checkoutSchema = z.object({
   payment: z.coerce.number(),
   checkoutDate: z.string().min(1, "Date is required"),

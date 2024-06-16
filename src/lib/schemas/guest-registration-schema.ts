@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const requiredString = z.string().min(1, "Required field");
+const optionalString = z.string().optional();
 
 export const guestRegistrationSchema = z.object({
   referredBy: requiredString,
@@ -14,7 +15,7 @@ export const guestRegistrationSchema = z.object({
   nationality: requiredString,
   address: requiredString,
   mobileNumber: requiredString,
-  landlineNumber: requiredString,
+  landlineNumber: optionalString,
   accompaniedBy: requiredString,
   emergencyContactName: requiredString,
   emergencyContact: requiredString,

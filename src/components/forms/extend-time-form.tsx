@@ -22,12 +22,13 @@ import { Input } from "../ui/input";
 import { FormError } from "./FormError";
 import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
+import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
-export default function ExtendTimeForm({ data }: any) {
+export default function ExtendTimeForm({ data, room }: any) {
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
-  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<string>("");
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [advancePayment, setAdvancePayment] = useState<number>(0);
 
@@ -51,11 +52,8 @@ export default function ExtendTimeForm({ data }: any) {
   }
 
   const calculateAmount = () => {
-    const differenceInMs =
-      endDate && data.endDate ? endDate.getTime() - data.endDate.getTime() : 0;
-    const daysDifference = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
-    const totalAmount = Math.round(daysDifference * chargesPerDay);
-    setTotalAmount(totalAmount);
+    const amount = calculateTotalAmount(data.endDate, endDate, room);
+    setTotalAmount(amount);
   };
 
   return (
@@ -75,11 +73,10 @@ export default function ExtendTimeForm({ data }: any) {
                     <FormLabel>Extend Date (To)</FormLabel>
                     <FormControl>
                       <Input
-                        type="datetime-local"
+                        type="date"
                         onChange={(e: any) => {
                           const selectedDate = e.target.value;
-                          const formatedDate = new Date(selectedDate);
-                          setEndDate(formatedDate);
+                          setEndDate(selectedDate);
                           fieldValues.onChange(selectedDate);
                         }}
                       />

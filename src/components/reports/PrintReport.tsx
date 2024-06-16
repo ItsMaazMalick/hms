@@ -63,6 +63,19 @@ export function PrintReport({ booking }: any) {
     return dates;
   }
 
+  function calculateTotalAmountReceived(bedAssigns: any[], bedId: string) {
+    const filterBeds = bedAssigns.filter((assign) => assign.bedId === bedId);
+    const total = filterBeds.reduce((total, assign) => {
+      const daysInMonth = isInCurrentMonth(
+        assign.startDate,
+        assign.endDate
+      ).length;
+      const amountReceived = assign.advancePayment;
+      return total + amountReceived;
+    }, 0);
+    return total;
+  }
+
   return (
     <>
       {/* PDF SAMPLE */}
@@ -84,8 +97,8 @@ export function PrintReport({ booking }: any) {
                     key={room.id}
                     className="w-full flex justify-center text-[12px] mt-2"
                   >
-                    <p className="border border-black flex justify-center items-center px-1 w-[90px] font-semibold">
-                      Room : {room.name}
+                    <p className="border border-black flex justify-center items-center px-1 w-[40px] font-semibold">
+                      {room.name}
                     </p>
                     {array.map((arr) => (
                       <p
@@ -104,13 +117,16 @@ export function PrintReport({ booking }: any) {
                     <p className="border border-black flex justify-center items-center w-[75px]">
                       Vacant Days
                     </p>
+                    <p className="border border-black flex justify-center items-center w-[50px]">
+                      Amount
+                    </p>
                   </div>
                   {room.bed.map((bed: any, arr: number) => (
                     <div
                       key={arr}
                       className="w-full flex justify-center text-[12px]"
                     >
-                      <p className="border border-black flex justify-center items-center px-1 w-[90px]">
+                      <p className="border border-black flex justify-center items-center px-1 w-[40px]">
                         {bed.name}
                       </p>
                       {array.map((day) => (
@@ -171,6 +187,9 @@ export function PrintReport({ booking }: any) {
                             },
                             0
                           )}
+                      </p>
+                      <p className="border border-black flex justify-center items-center w-[50px]">
+                        {calculateTotalAmountReceived(bed.bedAssign, bed.id)}
                       </p>
                     </div>
                   ))}
