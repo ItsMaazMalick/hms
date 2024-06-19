@@ -25,7 +25,6 @@ import TextInput from "../Inputs/TextInput";
 import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
 export default function ExtendTimeForm({ data, price }: any) {
-  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -48,7 +47,6 @@ export default function ExtendTimeForm({ data, price }: any) {
     form.reset();
     setError(result?.error);
     setSuccess(result?.success);
-    router.push("/dashboard");
   }
 
   const calculateAmount = () => {

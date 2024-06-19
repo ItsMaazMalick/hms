@@ -109,11 +109,9 @@ export default function RoomAllocationForm({
 }
 
 function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
-  const router = useRouter();
   const [floorArray, setFloorArray] = useState([]);
   const [roomsArray, setRoomsArray] = useState([]);
   const [bedsArray, setBedsArray] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [startDate, setStartDate] = useState<string>("");
@@ -144,7 +142,6 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
     form.reset();
     setError(result?.error);
     setSuccess(result?.success);
-    router.push("/dashboard");
   }
 
   const calculateAmount = () => {
@@ -276,10 +273,6 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                     <Select
                       onValueChange={(selectedValue) => {
                         const selectedRoom = selectedValue;
-                        const roomObject = rooms.find(
-                          (room: any) => room.id === selectedRoom
-                        );
-                        setSelectedRoom(roomObject);
                         const filteredBeds = beds.filter(
                           (bed: any) => bed.roomId === selectedRoom
                         );

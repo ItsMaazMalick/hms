@@ -27,7 +27,6 @@ import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
 
 export default function CheckoutForm({ data }: any) {
-  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
 
@@ -48,7 +47,6 @@ export default function CheckoutForm({ data }: any) {
     form.reset();
     setError(result?.error);
     setSuccess(result?.success);
-    router.push("/dashboard");
   }
 
   return (

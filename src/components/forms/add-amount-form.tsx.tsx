@@ -27,13 +27,9 @@ import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
 
 export default function AddAmountForm({ data }: any) {
-  const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [endDate, setEndDate] = useState<Date | undefined>();
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [advancePayment, setAdvancePayment] = useState<number>(0);
-  console.log(data);
 
   const form = useForm<z.infer<typeof addAmountSchema>>({
     resolver: zodResolver(addAmountSchema),
@@ -50,16 +46,7 @@ export default function AddAmountForm({ data }: any) {
     form.reset();
     setError(result?.error);
     setSuccess(result?.success);
-    router.push("/dashboard");
   }
-
-  const calculateAmount = () => {
-    const differenceInMs =
-      endDate && data.endDate ? endDate.getTime() - data.endDate.getTime() : 0;
-    const daysDifference = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
-    const totalAmount = Math.round(daysDifference * chargesPerDay);
-    setTotalAmount(totalAmount);
-  };
 
   return (
     <div className="mt-4 rounded-md shadow-md p-2 bg-white">
