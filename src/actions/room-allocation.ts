@@ -203,6 +203,42 @@ export async function getAssignBed(id: string) {
   }
 }
 
+export async function getBookingDetail(id: string) {
+  try {
+    const bed = await prisma.bedAssign.findUnique({
+      where: { id },
+      include: {
+        challans: true,
+        student: true,
+        guest: true,
+        bed: {
+          select: {
+            name: true,
+            room: {
+              select: {
+                name: true, // Select the name of the room
+                floor: {
+                  select: {
+                    name: true, // Select the name of the floor
+                    hall: {
+                      select: {
+                        name: true, // Select the name of the hall
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return bed;
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function extendDate(
   values: z.infer<typeof extendDateSchema>,
   totalPayment: number,

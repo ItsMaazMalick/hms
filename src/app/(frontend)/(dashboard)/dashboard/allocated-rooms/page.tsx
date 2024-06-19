@@ -19,6 +19,7 @@ import { OngoingButtons } from "@/components/allocated-rooms/ongoing-buttons";
 import { AddAmountButton } from "@/components/allocated-rooms/add-amount-button";
 import { ExpiredButton } from "@/components/allocated-rooms/expired-button";
 import { CheckoutButton } from "@/components/allocated-rooms/checkout-button";
+import { DetailButton } from "@/components/allocated-rooms/detail-button";
 
 const currentDate = new Date();
 
@@ -105,10 +106,13 @@ export default async function AllocatedRooms() {
                       paidAmount(recentBooking.challans)}
                   </TableCell>
                   {recentBooking.isClosed ? (
-                    <TableCell className="flex justify-center items-center">
-                      <Button size={"xs"} variant={"destructive"}>
-                        Closed
-                      </Button>
+                    <TableCell className="flex items-center justify-center gap-2">
+                      <>
+                        <DetailButton id={recentBooking.id} />
+                        <Button size={"xs"} variant={"destructive"}>
+                          Closed
+                        </Button>
+                      </>
                     </TableCell>
                   ) : (
                     <TableCell className="flex items-center justify-center gap-2">
