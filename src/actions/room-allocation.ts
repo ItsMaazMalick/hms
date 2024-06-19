@@ -171,7 +171,12 @@ export async function getRecentBookingsByHall(id: string) {
                   select: {
                     id: true,
                     name: true,
-                    bedAssign: true,
+                    price: true,
+                    bedAssign: {
+                      include: {
+                        challans: true,
+                      },
+                    },
                   },
                 },
               },

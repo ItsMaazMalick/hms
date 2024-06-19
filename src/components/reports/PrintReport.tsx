@@ -59,19 +59,20 @@ export function PrintReport({ booking }: any) {
         }
       }
     }
-
     return dates;
   }
 
-  function calculateTotalAmountReceived(bedAssigns: any[], bedId: string) {
-    const filterBeds = bedAssigns.filter((assign) => assign.bedId === bedId);
-    const total = filterBeds.reduce((total, assign) => {
-      const daysInMonth = isInCurrentMonth(
-        assign.startDate,
-        assign.endDate
-      ).length;
-      const amountReceived = assign.advancePayment;
-      return total + amountReceived;
+  function calculateAmountWithInMonth(challans: any[]) {
+    const total = challans.reduce((total, item) => {
+      const createdAt = new Date(item.createdAt);
+      const isSameMonth =
+        createdAt.getFullYear() === currentYear &&
+        createdAt.getMonth() + 1 === Number(currentMonth);
+
+      if (isSameMonth) {
+        return total + item.amount;
+      }
+      return total;
     }, 0);
     return total;
   }
@@ -189,7 +190,14 @@ export function PrintReport({ booking }: any) {
                           )}
                       </p>
                       <p className="border border-black flex justify-center items-center w-[50px]">
-                        {calculateTotalAmountReceived(bed.bedAssign, bed.id)}
+                        {calculateAmountWithInMonth(
+                          bed.bedAssign.reduce(
+                            (challans: any[], assign: any) => {
+                              return challans.concat(assign.challans);
+                            },
+                            []
+                          )
+                        )}
                       </p>
                     </div>
                   ))}
