@@ -18,11 +18,9 @@ import { revalidatePath } from "next/cache";
 export default function AlertComponent({
   id,
   path,
-  refundAmount,
 }: {
   id: string;
   path: string;
-  refundAmount?: number;
 }) {
   const formAction = async () => {
     "use server";
@@ -55,11 +53,7 @@ export default function AlertComponent({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            Please refund{" "}
-            <span className="font-bold text-destructive">
-              Rs:{refundAmount}
-            </span>{" "}
-            before delete
+            Please refund amount before delete
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

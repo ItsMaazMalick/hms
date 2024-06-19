@@ -17,9 +17,13 @@ export default async function ExtendDatePage({
     return redirect("/dashboard");
   }
 
-  console.log(bed);
-
-  const room = await getRoombyBed(bed.bedId);
+  function paidAmount(array: any[]) {
+    const total = array.reduce((total, item) => {
+      const amount = item.amount;
+      return total + amount;
+    }, 0);
+    return total;
+  }
 
   return (
     <div className="w-full">
@@ -41,11 +45,14 @@ export default async function ExtendDatePage({
         </div>
         <div>
           <Label>Advance Payment</Label>
-          <Input disabled placeholder={bed.advancePayment.toString()} />
+          <Input disabled placeholder={String(paidAmount(bed.challans))} />
         </div>
         <div>
           <Label>Remaining Payment</Label>
-          <Input disabled placeholder={bed.remainingPayment.toString()} />
+          <Input
+            disabled
+            placeholder={String(bed.totalPayment - paidAmount(bed.challans))}
+          />
         </div>
         <div>
           <Label>Start Date</Label>
@@ -57,7 +64,7 @@ export default async function ExtendDatePage({
         </div>
       </div>
       {/* UPDATE */}
-      <ExtendTimeForm data={bed} room={room} />
+      <ExtendTimeForm data={bed} price={bed.bed.price} />
     </div>
   );
 }

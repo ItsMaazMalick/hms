@@ -46,7 +46,7 @@ export default function AddAmountForm({ data }: any) {
   async function onSubmit(values: z.infer<typeof addAmountSchema>) {
     setSuccess("");
     setError("");
-    const result = await addAmount(values, data.totalPayment, data.id);
+    const result = await addAmount(values, data.id);
     form.reset();
     setError(result?.error);
     setSuccess(result?.success);

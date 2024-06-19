@@ -16,6 +16,15 @@ export default async function CheckoutPage({
   if (!bed) {
     return redirect("/dashboard");
   }
+
+  function paidAmount(array: any[]) {
+    const total = array.reduce((total, item) => {
+      const amount = item.amount;
+      return total + amount;
+    }, 0);
+    return total;
+  }
+
   return (
     <div className="w-full">
       <TopContainer
@@ -36,11 +45,14 @@ export default async function CheckoutPage({
         </div>
         <div>
           <Label>Advance Payment</Label>
-          <Input disabled placeholder={bed.advancePayment.toString()} />
+          <Input disabled placeholder={String(paidAmount(bed.challans))} />
         </div>
         <div>
           <Label>Remaining Payment</Label>
-          <Input disabled placeholder={bed.remainingPayment.toString()} />
+          <Input
+            disabled
+            placeholder={String(bed.totalPayment - paidAmount(bed.challans))}
+          />
         </div>
         <div>
           <Label>Start Date</Label>

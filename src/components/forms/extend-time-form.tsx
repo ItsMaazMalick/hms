@@ -24,7 +24,7 @@ import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
 import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
-export default function ExtendTimeForm({ data, room }: any) {
+export default function ExtendTimeForm({ data, price }: any) {
   const router = useRouter();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -52,7 +52,7 @@ export default function ExtendTimeForm({ data, room }: any) {
   }
 
   const calculateAmount = () => {
-    const amount = calculateTotalAmount(data.endDate, endDate, room);
+    const amount = calculateTotalAmount(data.endDate, endDate, price);
     setTotalAmount(amount);
   };
 

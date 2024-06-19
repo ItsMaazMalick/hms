@@ -48,6 +48,7 @@ export default function AddBedForm({ halls, floors, rooms }: any) {
       hall: "",
       floor: "",
       room: "",
+      price: 0,
       isAvailable: "",
       isAvailableForStudents: "",
     },
@@ -154,6 +155,12 @@ export default function AddBedForm({ halls, floors, rooms }: any) {
                 name="room"
                 items={roomsArray}
                 control={form.control}
+              />
+              <TextInput
+                label="Price"
+                name="price"
+                control={form.control}
+                type="number"
               />
               <SelectInput
                 label="Available?"

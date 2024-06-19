@@ -11,11 +11,8 @@ const numberOfDays = lastDayOfMonth.getDate();
 export const calculateTotalAmount = (
   startDate: string,
   endDate: string,
-  room: any
+  price: number
 ) => {
-  const price = room.price.find((price: any) => price.isAvailable === true);
-  const selectedBedPrice = price.currentPrice / room.numberOfBeds;
-
   const formatStartDate = new Date(startDate);
   const formatEndDate = new Date(endDate);
 
@@ -24,8 +21,6 @@ export const calculateTotalAmount = (
       ? formatEndDate.getTime() - formatStartDate.getTime()
       : 0;
   const daysDifference = Math.round(differenceInMs / (1000 * 60 * 60 * 24));
-  const totalAmount = Math.round(
-    daysDifference * (selectedBedPrice / numberOfDays)
-  );
+  const totalAmount = Math.round(daysDifference * price);
   return totalAmount;
 };

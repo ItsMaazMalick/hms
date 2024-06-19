@@ -44,22 +44,11 @@ export default function CheckoutForm({ data }: any) {
     console.log(values);
     setSuccess("");
     setError("");
-    if (values.payment < data.remainingPayment) {
-      setError("Please collect complete amount");
-      form.reset();
-    } else {
-      const result = await checkout(
-        values,
-        data.totalPayment,
-        data.advancePayment,
-        data.remainingPayment,
-        data.id
-      );
-      form.reset();
-      setError(result?.error);
-      setSuccess(result?.success);
-      router.push("/dashboard");
-    }
+    const result = await checkout(values, data.id);
+    form.reset();
+    setError(result?.error);
+    setSuccess(result?.success);
+    router.push("/dashboard");
   }
 
   return (
@@ -72,10 +61,6 @@ export default function CheckoutForm({ data }: any) {
           <div className="rounded-md w-full ring-1 p-2">
             {/* CALCULATIONS */}
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-4 gap-4">
-              <DisableInput
-                label="Remaining Amount"
-                placeholder={data.remainingPayment}
-              />
               <FormField
                 control={form.control}
                 name="payment"

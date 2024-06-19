@@ -16,6 +16,7 @@ export default async function AssignBed() {
   const floors = await getAllFloors();
   const rooms = await getAllRooms();
   const beds = await getAllBeds();
+  console.log(beds);
   return (
     <div className="w-full">
       <TopContainer

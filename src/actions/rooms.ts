@@ -10,29 +10,11 @@ export async function saveRoom(values: z.infer<typeof addRoomSchema>) {
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
-  const {
-    name,
-    price,
-    floor,
-    numberOfBeds,
-    isAvailable,
-    isAvailableForStudents,
-  } = validData.data;
+  const { name, floor, isAvailable, isAvailableForStudents } = validData.data;
   try {
-    const newPrice = await prisma.price.create({
-      data: {
-        currentPrice: price,
-      },
-    });
     const room = await prisma.room.create({
       data: {
         name,
-        price: {
-          connect: {
-            id: newPrice.id,
-          },
-        },
-        numberOfBeds: Number(numberOfBeds),
         isAvailable: isAvailable === "FALSE" ? false : true,
         isAvailableForStudents:
           isAvailableForStudents === "FALSE" ? false : true,
@@ -50,11 +32,7 @@ export async function saveRoom(values: z.infer<typeof addRoomSchema>) {
 
 export async function getAllRooms() {
   try {
-    const rooms = await prisma.room.findMany({
-      include: {
-        price: true,
-      },
-    });
+    const rooms = await prisma.room.findMany();
     return rooms;
   } catch (error) {
     console.log(error);
@@ -69,11 +47,7 @@ export async function getRoombyBed(bedId: string) {
         id: bedId,
       },
       include: {
-        room: {
-          include: {
-            price: true,
-          },
-        },
+        room: true,
       },
     });
 

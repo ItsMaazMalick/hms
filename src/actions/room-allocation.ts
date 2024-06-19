@@ -24,14 +24,18 @@ export async function assignBed(
     validData.data;
 
   try {
+    const existingChallan = await prisma.challan.findUnique({
+      where: { challanNumber },
+    });
+    if (existingChallan) {
+      return { error: "Receipt Number already exists" };
+    }
     if (role === "student") {
       const assignBed = await prisma.bedAssign.create({
         data: {
           startDate,
           endDate,
           totalPayment,
-          advancePayment,
-          remainingPayment: totalPayment - advancePayment,
           bed: {
             connect: { id: bed },
           },
@@ -49,6 +53,7 @@ export async function assignBed(
       await prisma.challan.create({
         data: {
           challanNumber,
+          amount: advancePayment,
           bedAssignId: assignBed.id,
         },
       });
@@ -62,8 +67,6 @@ export async function assignBed(
           startDate,
           endDate,
           totalPayment,
-          advancePayment,
-          remainingPayment: totalPayment - advancePayment,
           bed: {
             connect: {
               id: bed,
@@ -83,6 +86,7 @@ export async function assignBed(
       await prisma.challan.create({
         data: {
           challanNumber,
+          amount: advancePayment,
           bedAssignId: assignBed.id,
         },
       });
@@ -102,6 +106,7 @@ export async function getRecentBookings() {
         createdAt: "desc",
       },
       include: {
+        challans: true,
         student: {
           select: {
             id: true,
@@ -186,8 +191,10 @@ export async function getAssignBed(id: string) {
     const bed = await prisma.bedAssign.findUnique({
       where: { id },
       include: {
+        challans: true,
         student: true,
         guest: true,
+        bed: true,
       },
     });
     return bed;
@@ -214,20 +221,23 @@ export async function extendDate(
     if (!existingBedAssign) {
       return { error: "Invalid id provided" };
     }
-    const formatedEndDate = new Date(endDate);
+    const existingChallan = await prisma.challan.findUnique({
+      where: { challanNumber },
+    });
+    if (existingChallan) {
+      return { error: "Receipt Number already exists" };
+    }
     const bedAssign = await prisma.bedAssign.update({
       where: { id },
       data: {
         endDate,
         totalPayment: totalPayment + existingBedAssign.totalPayment,
-        advancePayment: advancePayment + existingBedAssign.advancePayment,
-        remainingPayment:
-          existingBedAssign.remainingPayment + (totalPayment - advancePayment),
       },
     });
     await prisma.challan.create({
       data: {
         challanNumber,
+        amount: advancePayment,
         bedAssignId: bedAssign.id,
       },
     });
@@ -241,7 +251,6 @@ export async function extendDate(
 // ADD AMOUNT
 export async function addAmount(
   values: z.infer<typeof addAmountSchema>,
-  totalPayment: number,
   id: string
 ) {
   const validData = addAmountSchema.safeParse(values);
@@ -257,17 +266,19 @@ export async function addAmount(
     if (!existingBedAssign) {
       return { error: "Invalid id provided" };
     }
-    const bedAssign = await prisma.bedAssign.update({
-      where: { id },
-      data: {
-        advancePayment: amount + existingBedAssign.advancePayment,
-        remainingPayment: existingBedAssign.remainingPayment - amount,
-      },
+
+    const existingChallan = await prisma.challan.findUnique({
+      where: { challanNumber },
     });
+    if (existingChallan) {
+      return { error: "Receipt Number already exists" };
+    }
+
     await prisma.challan.create({
       data: {
         challanNumber,
-        bedAssignId: bedAssign.id,
+        amount,
+        bedAssignId: existingBedAssign.id,
       },
     });
     revalidatePath("/dashboard");
@@ -280,9 +291,6 @@ export async function addAmount(
 
 export async function checkout(
   values: z.infer<typeof checkoutSchema>,
-  totalPayment: number,
-  advancePayment: number,
-  remainingPayment: number,
   id: string
 ) {
   const validData = checkoutSchema.safeParse(values);
@@ -301,12 +309,16 @@ export async function checkout(
       return { error: "No record found!" };
     }
 
+    const existingChallan = await prisma.challan.findUnique({
+      where: { challanNumber },
+    });
+    if (existingChallan) {
+      return { error: "Receipt Number already exists" };
+    }
+
     const bedAssign = await prisma.bedAssign.update({
       where: { id },
       data: {
-        totalPayment,
-        advancePayment: advancePayment + payment,
-        remainingPayment: remainingPayment - payment,
         endDate: checkoutDate,
         isClosed: true,
       },
@@ -320,6 +332,7 @@ export async function checkout(
     await prisma.challan.create({
       data: {
         challanNumber: challanNumber,
+        amount: payment,
         bedAssignId: bedAssign.id,
       },
     });

@@ -42,8 +42,6 @@ export default function AddRoomForm({ halls, floors }: any) {
     defaultValues: {
       name: "",
       hall: "",
-      price: 0,
-      numberOfBeds: 0,
       floor: "",
       isAvailable: "",
       isAvailableForStudents: "",
@@ -112,18 +110,6 @@ export default function AddRoomForm({ halls, floors }: any) {
                 label="Floor"
                 name="floor"
                 items={floorArray}
-                control={form.control}
-              />
-              <TextInput
-                label="Price"
-                name="price"
-                type="number"
-                control={form.control}
-              />
-              <TextInput
-                label="Number of beds"
-                name="numberOfBeds"
-                type="number"
                 control={form.control}
               />
               <SelectInput

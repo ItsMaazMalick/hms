@@ -112,8 +112,8 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
   const router = useRouter();
   const [floorArray, setFloorArray] = useState([]);
   const [roomsArray, setRoomsArray] = useState([]);
-  const [selectedRoom, setSelectedRoom] = useState();
   const [bedsArray, setBedsArray] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [startDate, setStartDate] = useState<string>("");
@@ -148,7 +148,7 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
   }
 
   const calculateAmount = () => {
-    const amount = calculateTotalAmount(startDate, endDate, selectedRoom);
+    const amount = calculateTotalAmount(startDate, endDate, selectedBedPrice);
     console.log(amount);
     setTotalAmount(amount);
     setIsShow(false);
@@ -280,12 +280,6 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                           (room: any) => room.id === selectedRoom
                         );
                         setSelectedRoom(roomObject);
-                        const price = roomObject.price.find(
-                          (price: any) => price.isAvailable === true
-                        );
-                        setSelectedBedPrice(
-                          price.currentPrice / roomObject.numberOfBeds
-                        );
                         const filteredBeds = beds.filter(
                           (bed: any) => bed.roomId === selectedRoom
                         );
@@ -327,11 +321,44 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
                 )}
               />
               {/* FLOOR */}
-              <SelectInput
-                label="Bed"
-                name="bed"
-                items={bedsArray}
+              <FormField
                 control={form.control}
+                name="bed"
+                render={({ field: { value, ...fieldValues } }) => (
+                  <FormItem>
+                    <FormLabel>Select Bed</FormLabel>
+                    <Select
+                      onValueChange={(selectedValue) => {
+                        const selectedBed = selectedValue;
+                        const bedObject = beds.find(
+                          (bed: any) => bed.id === selectedBed
+                        );
+                        setSelectedBedPrice(bedObject.price);
+                        fieldValues.onChange(selectedBed);
+                      }}
+                      //   defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Bed" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bedsArray.map(
+                          (
+                            item: { name: string; id: string },
+                            index: number
+                          ) => (
+                            <SelectItem key={index} value={item.id}>
+                              {item.name}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
 
               <FormField

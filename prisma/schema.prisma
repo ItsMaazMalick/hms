@@ -34,8 +34,8 @@ model Floor {
   isAvailable            Boolean
   isAvailableForStudents Boolean
   rooms                  Room[]
-  hallId                 String?  @db.ObjectId
-  hall                   Hall?    @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  hallId                 String   @db.ObjectId
+  hall                   Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
 }
@@ -43,25 +43,13 @@ model Floor {
 model Room {
   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
   name                   String
-  price                  Price[]
-  numberOfBeds           Int
   isAvailable            Boolean
   isAvailableForStudents Boolean
   bed                    Bed[]
-  floorId                String?  @db.ObjectId
-  floor                  Floor?   @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  floorId                String   @db.ObjectId
+  floor                  Floor    @relation(fields: [floorId], references: [id], onDelete: Cascade)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-}
-
-model Price {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  currentPrice Float
-  isAvailable  Boolean  @default(true)
-  roomId       String?  @db.ObjectId
-  room         Room?    @relation(fields: [roomId], references: [id])
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 }
 
 model Bed {
@@ -69,11 +57,20 @@ model Bed {
   name                   String
   isAvailable            Boolean
   isAvailableForStudents Boolean
-  roomId                 String?     @db.ObjectId
-  room                   Room?       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  price                  Float
+  roomId                 String      @db.ObjectId
+  room                   Room        @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bedAssign              BedAssign[]
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
+}
+
+model Price {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  currentPrice Float
+  isAvailable  Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model StudentRegistration {
@@ -125,27 +122,26 @@ model GuestRegistration {
 }
 
 model BedAssign {
-  id               String               @id @default(auto()) @map("_id") @db.ObjectId
-  startDate        String
-  endDate          String
-  challans         Challan[]
-  totalPayment     Float
-  advancePayment   Float
-  remainingPayment Float
-  isClosed         Boolean              @default(false)
-  studentId        String?              @db.ObjectId
-  student          StudentRegistration? @relation(fields: [studentId], references: [id])
-  guestId          String?              @db.ObjectId
-  guest            GuestRegistration?   @relation(fields: [guestId], references: [id])
-  bedId            String               @db.ObjectId
-  bed              Bed                  @relation(fields: [bedId], references: [id])
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  id           String               @id @default(auto()) @map("_id") @db.ObjectId
+  startDate    String
+  endDate      String
+  totalPayment Float
+  challans     Challan[]
+  isClosed     Boolean              @default(false)
+  studentId    String?              @db.ObjectId
+  student      StudentRegistration? @relation(fields: [studentId], references: [id])
+  guestId      String?              @db.ObjectId
+  guest        GuestRegistration?   @relation(fields: [guestId], references: [id])
+  bedId        String               @db.ObjectId
+  bed          Bed                  @relation(fields: [bedId], references: [id])
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 }
 
 model Challan {
   id            String    @id @default(auto()) @map("_id") @db.ObjectId
   challanNumber String    @unique
+  amount        Float
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   BedAssign     BedAssign @relation(fields: [bedAssignId], references: [id])

@@ -24,6 +24,7 @@ const currentDate = new Date();
 
 export default async function AllocatedRooms() {
   const recentBookings = await getRecentBookings();
+  console.log(recentBookings);
 
   // FUNCTION TO CALCULATE NUMBER OF DAYS
   const calculateDays = (endDate: string) => {
@@ -34,6 +35,14 @@ export default async function AllocatedRooms() {
     );
     return daysDifference;
   };
+
+  function paidAmount(array: any[]) {
+    const total = array.reduce((total, item) => {
+      const amount = item.amount;
+      return total + amount;
+    }, 0);
+    return total;
+  }
 
   return (
     <div className="w-full">
@@ -90,8 +99,11 @@ export default async function AllocatedRooms() {
                       : ""}
                   </TableCell>
                   <TableCell>{recentBooking.totalPayment}</TableCell>
-                  <TableCell>{recentBooking.advancePayment}</TableCell>
-                  <TableCell>{recentBooking.remainingPayment}</TableCell>
+                  <TableCell>{paidAmount(recentBooking.challans)}</TableCell>
+                  <TableCell>
+                    {recentBooking.totalPayment -
+                      paidAmount(recentBooking.challans)}
+                  </TableCell>
                   {recentBooking.isClosed ? (
                     <TableCell className="flex justify-center items-center">
                       <Button size={"xs"} variant={"destructive"}>
@@ -112,7 +124,6 @@ export default async function AllocatedRooms() {
                         <AlertComponent
                           id={recentBooking.id}
                           path="/dashboard/rooms-allocated"
-                          refundAmount={recentBooking.advancePayment}
                         />
                       )}
                     </TableCell>
