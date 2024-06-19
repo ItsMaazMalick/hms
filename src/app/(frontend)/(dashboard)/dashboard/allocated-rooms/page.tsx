@@ -119,6 +119,7 @@ export default async function AllocatedRooms() {
                         <OngoingButtons recentBooking={recentBooking} />
                       ) : bookingStatus === "expired" ? (
                         <>
+                          <DetailButton id={recentBooking.id} />
                           <ExpiredButton />
                           <AddAmountButton id={recentBooking.id} />
                           <CheckoutButton id={recentBooking.id} />
