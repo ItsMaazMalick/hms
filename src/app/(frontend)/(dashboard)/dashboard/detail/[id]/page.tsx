@@ -89,8 +89,11 @@ export default async function DetailPage({
         TRANSACTION HISTORY
       </h3>
       {bed.challans.map((challan) => (
-        <div className="my-2 w-full flex justify-center items-center gap-4 bg-primary text-primary-foreground p-2 rounded-md">
-          <div key={challan.id} className="w-[35%]">
+        <div
+          key={challan.id}
+          className="my-2 w-full flex justify-center items-center gap-4 bg-primary text-primary-foreground p-2 rounded-md"
+        >
+          <div className="w-[35%]">
             <Label>Receipt Number</Label>
             <Input disabled placeholder={challan.challanNumber} />
           </div>

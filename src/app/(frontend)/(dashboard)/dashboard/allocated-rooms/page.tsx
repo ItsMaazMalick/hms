@@ -25,7 +25,6 @@ const currentDate = new Date();
 
 export default async function AllocatedRooms() {
   const recentBookings = await getRecentBookings();
-  console.log(recentBookings);
 
   // FUNCTION TO CALCULATE NUMBER OF DAYS
   const calculateDays = (endDate: string) => {
