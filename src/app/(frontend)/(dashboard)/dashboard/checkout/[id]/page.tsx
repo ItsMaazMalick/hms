@@ -64,7 +64,7 @@ export default async function CheckoutPage({
         </div>
       </div>
       {/* UPDATE */}
-      <CheckoutForm data={bed} />
+      <CheckoutForm data={bed} paidAmount={paidAmount(bed.challans)} />
     </div>
   );
 }

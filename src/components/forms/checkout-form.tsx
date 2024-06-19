@@ -25,10 +25,14 @@ import { Input } from "../ui/input";
 import { FormError } from "./FormError";
 import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
+import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
-export default function CheckoutForm({ data }: any) {
+export default function CheckoutForm({ data, paidAmount }: any) {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  // const [checkoutDate, setCheckoutDate] = useState<string>("");
+  const [totalAmount, setTotalAmount] = useState(data.totalPayment);
+  const [isShow, setIsShow] = useState(true);
 
   const form = useForm<z.infer<typeof checkoutSchema>>({
     resolver: zodResolver(checkoutSchema),
@@ -49,6 +53,18 @@ export default function CheckoutForm({ data }: any) {
     setSuccess(result?.success);
   }
 
+  const calculateAmount = () => {
+    const checkoutDate = form.getValues("checkoutDate");
+    console.log(data.startDate, checkoutDate);
+    const amount = calculateTotalAmount(
+      data.startDate,
+      checkoutDate,
+      data.bed.price
+    );
+    setTotalAmount(amount - 300);
+    setIsShow(false);
+  };
+
   return (
     <div className="mt-4 rounded-md shadow-md p-2 bg-white">
       <p className="text-xl font-semibold text-primary text-center my-2">
@@ -59,6 +75,10 @@ export default function CheckoutForm({ data }: any) {
           <div className="rounded-md w-full ring-1 p-2">
             {/* CALCULATIONS */}
             <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-4 gap-4">
+              <DisableInput
+                label="Remaining Amount"
+                placeholder={String(totalAmount - paidAmount)}
+              />
               <FormField
                 control={form.control}
                 name="payment"
@@ -83,6 +103,8 @@ export default function CheckoutForm({ data }: any) {
                         type="date"
                         onChange={(e: any) => {
                           const selectedDate = e.target.value;
+                          // setCheckoutDate(selectedDate);
+                          setIsShow(true);
                           fieldValues.onChange(selectedDate);
                         }}
                       />
@@ -101,13 +123,22 @@ export default function CheckoutForm({ data }: any) {
 
           {error && <FormError message={error} />}
           {success && <FormSuccess message={success} />}
-          <div className="w-fit mx-auto">
-            <FormSubmitButton
-              title="Checkout Now"
-              variant={"secondary"}
-              loading={form.formState.isSubmitting}
-            />
-          </div>
+          {isShow ? (
+            <div
+              className="cursor-pointer bg-primary/70 hover:bg-primary rounded-md py-2 px-4 w-fit text-primary-foreground mt-4 flex justify-center items-center transition-all duration-300 mx-auto"
+              onClick={calculateAmount}
+            >
+              Calculate Amount
+            </div>
+          ) : (
+            <div className="w-fit mx-auto">
+              <FormSubmitButton
+                title="Checkout Now"
+                variant={"secondary"}
+                loading={form.formState.isSubmitting}
+              />
+            </div>
+          )}
         </form>
       </Form>
     </div>

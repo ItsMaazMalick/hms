@@ -45,7 +45,7 @@ export default function AlertComponent({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant={"destructive"} size={"sm"}>
+        <Button variant={"destructive"} size={"xs"}>
           Cancel
         </Button>
       </AlertDialogTrigger>
