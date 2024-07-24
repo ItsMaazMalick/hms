@@ -31,36 +31,36 @@ export default async function ExtendDatePage({
         title="Extend Date"
         link={<School size={35} className="p-1 rounded-md" />}
       />
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-primary text-primary-foreground p-2 rounded-md">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-primary-foreground p-2 rounded-md">
         <div>
           <Label>ID / CNIC</Label>
           <Input
-            disabled
+            readOnly
             placeholder={bed.student?.registrationNumber || bed.guest?.cnic}
           />
         </div>
         <div>
           <Label>Total Payment</Label>
-          <Input disabled placeholder={bed.totalPayment.toString()} />
+          <Input readOnly placeholder={bed.totalPayment.toString()} />
         </div>
         <div>
           <Label>Advance Payment</Label>
-          <Input disabled placeholder={String(paidAmount(bed.challans))} />
+          <Input readOnly placeholder={String(paidAmount(bed.challans))} />
         </div>
         <div>
           <Label>Remaining Payment</Label>
           <Input
-            disabled
+            readOnly
             placeholder={String(bed.totalPayment - paidAmount(bed.challans))}
           />
         </div>
         <div>
           <Label>Start Date</Label>
-          <Input disabled placeholder={bed.startDate.toLocaleString()} />
+          <Input readOnly placeholder={bed.startDate.toLocaleString()} />
         </div>
         <div>
           <Label>End Date</Label>
-          <Input disabled placeholder={bed.endDate.toLocaleString()} />
+          <Input readOnly placeholder={bed.endDate.toLocaleString()} />
         </div>
       </div>
       {/* UPDATE */}

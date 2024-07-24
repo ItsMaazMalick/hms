@@ -51,7 +51,7 @@ export default function AddAmountForm({ data }: any) {
   return (
     <div className="mt-4 rounded-md shadow-md p-2 bg-white">
       <p className="text-xl font-semibold text-primary text-center my-2">
-        Extend Date
+        Add Amount
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

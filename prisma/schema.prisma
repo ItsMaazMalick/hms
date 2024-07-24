@@ -21,7 +21,7 @@ model Admin {
 model Hall {
   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
   name                   String
-  isAvailable            Boolean
+  isAvailable            Boolean  @default(true)
   isAvailableForStudents Boolean
   floors                 Floor[]
   createdAt              DateTime @default(now())
@@ -31,7 +31,7 @@ model Hall {
 model Floor {
   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
   name                   String
-  isAvailable            Boolean
+  isAvailable            Boolean  @default(true)
   isAvailableForStudents Boolean
   rooms                  Room[]
   hallId                 String   @db.ObjectId
@@ -43,7 +43,7 @@ model Floor {
 model Room {
   id                     String   @id @default(auto()) @map("_id") @db.ObjectId
   name                   String
-  isAvailable            Boolean
+  isAvailable            Boolean  @default(true)
   isAvailableForStudents Boolean
   bed                    Bed[]
   floorId                String   @db.ObjectId
@@ -55,7 +55,7 @@ model Room {
 model Bed {
   id                     String      @id @default(auto()) @map("_id") @db.ObjectId
   name                   String
-  isAvailable            Boolean
+  isAvailable            Boolean     @default(true)
   isAvailableForStudents Boolean
   price                  Float
   roomId                 String      @db.ObjectId
@@ -92,6 +92,7 @@ model StudentRegistration {
   landlineNumber       String?
   emergencyContactName String
   emergencyContact     String
+  isBooked             Boolean     @default(false)
   bed                  BedAssign[]
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
@@ -116,6 +117,7 @@ model GuestRegistration {
   accompaniedBy        String
   emergencyContactName String
   emergencyContact     String
+  isBooked             Boolean     @default(false)
   bed                  BedAssign[]
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt

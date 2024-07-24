@@ -15,10 +15,13 @@ import { login } from "@/actions/login";
 import { useRouter } from "next/navigation";
 import { FormError } from "./FormError";
 import { FormSuccess } from "./FormSuccess";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export default function AdminLoginForm() {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const [isShow, setIsShow] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -56,13 +59,26 @@ export default function AdminLoginForm() {
           <TextInput
             label="Password"
             name="password"
-            type="password"
+            type={isShow ? "text" : "password"}
             placeholder="******"
             control={form.control}
           />
-          <Link className="ml-auto inline-block text-sm underline" href="#">
+          <div className="flex items-center gap-1">
+            <input
+              onChange={() => setIsShow((prev) => !prev)}
+              id="show-password"
+              type="checkbox"
+            />
+            <Label
+              onChange={() => setIsShow((prev) => !prev)}
+              htmlFor="show-password"
+            >
+              {isShow ? "Hide" : "Show"} Password
+            </Label>
+          </div>
+          {/* <Link className="ml-auto inline-block text-sm underline" href="#">
             Forgot your password?
-          </Link>
+          </Link> */}
           {error && <FormError message={error} />}
           {success && <FormSuccess message={success} />}
           <FormSubmitButton

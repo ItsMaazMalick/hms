@@ -31,6 +31,12 @@ export async function assignBed(
       return { error: "Receipt Number already exists" };
     }
     if (role === "student") {
+      const existingStudent = await prisma.studentRegistration.findUnique({
+        where: { id },
+      });
+      if (!existingStudent) {
+        return { error: "No student found" };
+      }
       const assignBed = await prisma.bedAssign.create({
         data: {
           startDate,
@@ -57,11 +63,23 @@ export async function assignBed(
           bedAssignId: assignBed.id,
         },
       });
+      await prisma.studentRegistration.update({
+        where: { id: existingStudent.id },
+        data: {
+          isBooked: true,
+        },
+      });
       revalidatePath("/dashboard/assign-bed");
       return { success: "Data saved successfully" };
     }
 
     if (role === "guest") {
+      const existingGuest = await prisma.guestRegistration.findUnique({
+        where: { id },
+      });
+      if (!existingGuest) {
+        return { error: "No student found" };
+      }
       const assignBed = await prisma.bedAssign.create({
         data: {
           startDate,
@@ -88,6 +106,12 @@ export async function assignBed(
           challanNumber,
           amount: advancePayment,
           bedAssignId: assignBed.id,
+        },
+      });
+      await prisma.guestRegistration.update({
+        where: { id: existingGuest.id },
+        data: {
+          isBooked: true,
         },
       });
       revalidatePath("/dashboard/assign-bed");
@@ -377,6 +401,23 @@ export async function checkout(
         bedAssignId: bedAssign.id,
       },
     });
+    if (existingBedAssign.studentId) {
+      await prisma.studentRegistration.update({
+        where: { id: existingBedAssign.studentId },
+        data: {
+          isBooked: false,
+        },
+      });
+    }
+    if (existingBedAssign.guestId) {
+      await prisma.guestRegistration.update({
+        where: { id: existingBedAssign.guestId },
+        data: {
+          isBooked: false,
+        },
+      });
+    }
+
     revalidatePath("/dashboard");
     return { success: "Successfully Checkout" };
   } catch (error) {

@@ -4,6 +4,22 @@ import prisma from "@/lib/db";
 import { searchRegistrationSchema } from "@/lib/schemas/search-registration-schema";
 import { z } from "zod";
 
+export async function getPendingBookings() {
+  try {
+    const students = await prisma.studentRegistration.findMany({
+      where: {
+        isBooked: false,
+      },
+    });
+    const guests = await prisma.guestRegistration.findMany({
+      where: { isBooked: false },
+    });
+    return { students, guests };
+  } catch (error) {
+    return null;
+  }
+}
+
 export async function searchRegistration(
   values: z.infer<typeof searchRegistrationSchema>
 ) {

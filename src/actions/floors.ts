@@ -10,12 +10,11 @@ export async function saveFloor(values: z.infer<typeof addFloorSchema>) {
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
-  const { name, hall, isAvailable, isAvailableForStudents } = validData.data;
+  const { name, hall, isAvailableForStudents } = validData.data;
   try {
     const floor = await prisma.floor.create({
       data: {
         name,
-        isAvailable: isAvailable === "FALSE" ? false : true,
         isAvailableForStudents:
           isAvailableForStudents === "FALSE" ? false : true,
         hall: {

@@ -10,13 +10,12 @@ export async function saveHall(values: z.infer<typeof addHallSchema>) {
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
-  const { name, isAvailable, isAvailableForStudents } = validData.data;
+  const { name, isAvailableForStudents } = validData.data;
 
   try {
     const saveHall = await prisma.hall.create({
       data: {
         name,
-        isAvailable: isAvailable === "FALSE" ? false : true,
         isAvailableForStudents:
           isAvailableForStudents === "FALSE" ? false : true,
       },

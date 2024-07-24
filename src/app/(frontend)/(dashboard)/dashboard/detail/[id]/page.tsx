@@ -29,59 +29,59 @@ export default async function DetailPage({
         title="Detail"
         link={<School size={35} className="p-1 rounded-md" />}
       />
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-primary text-primary-foreground p-2 rounded-md">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-primary-foreground p-2 rounded-md">
         <div>
-          <Label>NAME</Label>
+          <Label>Name</Label>
           <Input
-            disabled
+            readOnly
             placeholder={bed.student?.fullName || bed.guest?.fullName}
           />
         </div>
         <div>
-          <Label>HALL</Label>
-          <Input disabled placeholder={bed.bed.room.floor.hall.name} />
+          <Label>Hall</Label>
+          <Input readOnly placeholder={bed.bed.room.floor.hall.name} />
         </div>
         <div>
-          <Label>FLOOR</Label>
-          <Input disabled placeholder={bed.bed.room.floor.name} />
+          <Label>Floor</Label>
+          <Input readOnly placeholder={bed.bed.room.floor.name} />
         </div>
         <div>
-          <Label>ROOM</Label>
-          <Input disabled placeholder={bed.bed.room.name} />
+          <Label>Room</Label>
+          <Input readOnly placeholder={bed.bed.room.name} />
         </div>
         <div>
           <Label>BED</Label>
-          <Input disabled placeholder={bed.bed.name} />
+          <Input readOnly placeholder={bed.bed.name} />
         </div>
         <div>
           <Label>ID / CNIC</Label>
           <Input
-            disabled
+            readOnly
             placeholder={bed.student?.registrationNumber || bed.guest?.cnic}
           />
         </div>
         <div>
           <Label>Total Payment</Label>
-          <Input disabled placeholder={bed.totalPayment.toString()} />
+          <Input readOnly placeholder={bed.totalPayment.toString()} />
         </div>
         <div>
           <Label>Amount Paid</Label>
-          <Input disabled placeholder={paidAmount(bed.challans).toString()} />
+          <Input readOnly placeholder={paidAmount(bed.challans).toString()} />
         </div>
         <div>
           <Label>Remaining Payment</Label>
           <Input
-            disabled
+            readOnly
             placeholder={String(bed.totalPayment - paidAmount(bed.challans))}
           />
         </div>
         <div>
           <Label>Start Date</Label>
-          <Input disabled placeholder={bed.startDate.toLocaleString()} />
+          <Input readOnly placeholder={bed.startDate.toLocaleString()} />
         </div>
         <div>
           <Label>End Date</Label>
-          <Input disabled placeholder={bed.endDate.toLocaleString()} />
+          <Input readOnly placeholder={bed.endDate.toLocaleString()} />
         </div>
       </div>
       {/* TRANSACTION */}
@@ -91,20 +91,20 @@ export default async function DetailPage({
       {bed.challans.map((challan) => (
         <div
           key={challan.id}
-          className="my-2 w-full flex justify-center items-center gap-4 bg-primary text-primary-foreground p-2 rounded-md"
+          className="my-2 w-full flex justify-center items-center gap-4 bg-primary-foreground  p-2 rounded-md"
         >
           <div className="w-[35%]">
             <Label>Receipt Number</Label>
-            <Input disabled placeholder={challan.challanNumber} />
+            <Input readOnly placeholder={challan.challanNumber} />
           </div>
           <div className="w-[35%]">
             <Label>Amount Paid</Label>
-            <Input disabled placeholder={String(challan.amount)} />
+            <Input readOnly placeholder={String(challan.amount)} />
           </div>
           <div className="w-[30%]">
             <Label>Transaction Date</Label>
             <Input
-              disabled
+              readOnly
               placeholder={challan.createdAt.toLocaleDateString()}
             />
           </div>

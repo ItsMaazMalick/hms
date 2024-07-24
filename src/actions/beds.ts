@@ -10,15 +10,13 @@ export async function saveBed(values: z.infer<typeof addBedSchema>) {
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
-  const { name, room, price, isAvailable, isAvailableForStudents } =
-    validData.data;
+  const { name, room, price, isAvailableForStudents } = validData.data;
 
   try {
     const bed = await prisma.bed.create({
       data: {
         name,
         price,
-        isAvailable: isAvailable === "FALSE" ? false : true,
         isAvailableForStudents:
           isAvailableForStudents === "FALSE" ? false : true,
         room: {

@@ -9,6 +9,7 @@ import { getAllBeds } from "@/actions/beds";
 import TopContainer from "@/components/header/TopContainer";
 import { School } from "lucide-react";
 import RoomAllocationForm from "@/components/forms/room-allocation-form";
+import { getPendingBookings } from "@/actions/search-registration";
 
 export default async function AssignBed() {
   noStore();
@@ -16,7 +17,8 @@ export default async function AssignBed() {
   const floors = await getAllFloors();
   const rooms = await getAllRooms();
   const beds = await getAllBeds();
-  console.log(beds);
+  const pendingBookings = await getPendingBookings();
+
   return (
     <div className="w-full">
       <TopContainer
@@ -28,6 +30,7 @@ export default async function AssignBed() {
         floors={floors}
         rooms={rooms}
         beds={beds}
+        pendingBookings={pendingBookings}
       />
     </div>
   );
