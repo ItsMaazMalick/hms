@@ -38,6 +38,7 @@ export default async function HallsWithRoom({ hall }: any) {
                       <div className="grid grid-cols-4 justify-center gap-2 p-2">
                         {room.bed.map((bed: any) => (
                           <BedSubmitButton
+                            key={bed.id}
                             bed={bed}
                             pendingBookings={pendingBookings}
                           />
