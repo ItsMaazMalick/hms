@@ -44,7 +44,6 @@ export default function CheckoutForm({ data, paidAmount }: any) {
   });
 
   async function onSubmit(values: z.infer<typeof checkoutSchema>) {
-    console.log(values);
     setSuccess("");
     setError("");
     const result = await checkout(values, data.id);

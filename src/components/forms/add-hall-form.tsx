@@ -3,17 +3,15 @@ import TextInput from "@/components/Inputs/TextInput";
 import FormSubmitButton from "@/components/button/FormSubmitButton";
 import { Form } from "@/components/ui/form";
 
+import { saveHall } from "@/actions/hall";
+import { addHallSchema } from "@/lib/schemas/add-hall-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import SelectInput from "../Inputs/SelectInput";
-import { studentRegistrationSchema } from "@/lib/schemas/student-registration-schema";
-import { saveStudentRegistration } from "@/actions/student-registration";
-import { useState } from "react";
 import { FormError } from "./FormError";
 import { FormSuccess } from "./FormSuccess";
-import { addHallSchema } from "@/lib/schemas/add-hall-schema";
-import { saveHall } from "@/actions/hall";
 
 export default function AddHallForm() {
   const [error, setError] = useState<string | undefined>("");
@@ -22,7 +20,6 @@ export default function AddHallForm() {
     resolver: zodResolver(addHallSchema),
     defaultValues: {
       name: "",
-      isAvailable: "",
       isAvailableForStudents: "",
     },
   });
@@ -43,15 +40,6 @@ export default function AddHallForm() {
           <div className="rounded-md w-full ring-1 p-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <TextInput label="Name" name="name" control={form.control} />
-              <SelectInput
-                label="Available?"
-                name="isAvailable"
-                items={[
-                  { id: "FALSE", name: "FALSE" },
-                  { id: "TRUE", name: "TRUE" },
-                ]}
-                control={form.control}
-              />
               <SelectInput
                 label="Available for students?"
                 name="isAvailableForStudents"

@@ -3,6 +3,8 @@
 import prisma from "@/lib/db";
 import { addBedSchema } from "@/lib/schemas/add-bed-schema";
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function saveBed(values: z.infer<typeof addBedSchema>) {
@@ -26,10 +28,11 @@ export async function saveBed(values: z.infer<typeof addBedSchema>) {
         },
       },
     });
-
+    redirect("/dashboard/room-allocation");
     revalidatePath("/dashboard/add-bed");
     return { success: "Data saved successfully" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     return { error: "Something went wrong" };
   }
 }

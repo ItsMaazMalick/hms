@@ -3,6 +3,8 @@
 import prisma from "@/lib/db";
 import { addHallSchema } from "@/lib/schemas/add-hall-schema";
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function saveHall(values: z.infer<typeof addHallSchema>) {
@@ -20,9 +22,11 @@ export async function saveHall(values: z.infer<typeof addHallSchema>) {
           isAvailableForStudents === "FALSE" ? false : true,
       },
     });
+    redirect("/dashboard/add-floor");
     revalidatePath("/dashboard/add-hall");
     return { success: "Data saved successfully" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     return { error: "Error saving data" };
   }
 }

@@ -49,7 +49,6 @@ export default function AddBedForm({ halls, floors, rooms }: any) {
       floor: "",
       room: "",
       price: 0,
-      isAvailable: "",
       isAvailableForStudents: "",
     },
   });
@@ -157,19 +156,10 @@ export default function AddBedForm({ halls, floors, rooms }: any) {
                 control={form.control}
               />
               <TextInput
-                label="Price"
+                label="Price (per day)"
                 name="price"
                 control={form.control}
                 type="number"
-              />
-              <SelectInput
-                label="Available?"
-                name="isAvailable"
-                items={[
-                  { id: "FALSE", name: "FALSE" },
-                  { id: "TRUE", name: "TRUE" },
-                ]}
-                control={form.control}
               />
               <SelectInput
                 label="Available for students?"

@@ -4,10 +4,13 @@ import prisma from "@/lib/db";
 import {
   addAmountSchema,
   assignBedSchema,
+  assignBedSchemaDialog,
   checkoutSchema,
   extendDateSchema,
 } from "@/lib/schemas/assign-bed-schema";
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function assignBed(
@@ -17,6 +20,119 @@ export async function assignBed(
   id: string
 ) {
   const validData = assignBedSchema.safeParse(values);
+  if (!validData?.success) {
+    return { error: "Invalid data provided" };
+  }
+  const { startDate, endDate, advancePayment, bed, challanNumber } =
+    validData.data;
+
+  try {
+    const existingChallan = await prisma.challan.findUnique({
+      where: { challanNumber },
+    });
+    if (existingChallan) {
+      return { error: "Receipt Number already exists" };
+    }
+    if (role === "student") {
+      const existingStudent = await prisma.studentRegistration.findUnique({
+        where: { id },
+      });
+      if (!existingStudent) {
+        return { error: "No student found" };
+      }
+      const assignBed = await prisma.bedAssign.create({
+        data: {
+          startDate,
+          endDate,
+          totalPayment,
+          bed: {
+            connect: { id: bed },
+          },
+          student: {
+            connect: { id },
+          },
+        },
+      });
+      await prisma.bed.update({
+        where: { id: bed },
+        data: {
+          isAvailable: false,
+        },
+      });
+      await prisma.challan.create({
+        data: {
+          challanNumber,
+          amount: advancePayment,
+          bedAssignId: assignBed.id,
+        },
+      });
+      await prisma.studentRegistration.update({
+        where: { id: existingStudent.id },
+        data: {
+          isBooked: true,
+        },
+      });
+      revalidatePath("/dashboard/assign-bed");
+      return { success: "Data saved successfully" };
+    }
+
+    if (role === "guest") {
+      const existingGuest = await prisma.guestRegistration.findUnique({
+        where: { id },
+      });
+      if (!existingGuest) {
+        return { error: "No student found" };
+      }
+      const assignBed = await prisma.bedAssign.create({
+        data: {
+          startDate,
+          endDate,
+          totalPayment,
+          bed: {
+            connect: {
+              id: bed,
+            },
+          },
+          guest: {
+            connect: { id },
+          },
+        },
+      });
+      await prisma.bed.update({
+        where: { id: bed },
+        data: {
+          isAvailable: false,
+        },
+      });
+      await prisma.challan.create({
+        data: {
+          challanNumber,
+          amount: advancePayment,
+          bedAssignId: assignBed.id,
+        },
+      });
+      await prisma.guestRegistration.update({
+        where: { id: existingGuest.id },
+        data: {
+          isBooked: true,
+        },
+      });
+      revalidatePath("/dashboard/assign-bed");
+      return { success: "Data saved successfully" };
+    }
+  } catch (error) {
+    console.log(error);
+    return { error: "Something went wrong" };
+  }
+}
+
+export async function assignBedDialog(
+  values: z.infer<typeof assignBedSchemaDialog>,
+  totalPayment: number,
+  role: string,
+  id: string
+) {
+  const validData = assignBedSchemaDialog.safeParse(values);
   if (!validData?.success) {
     return { error: "Invalid data provided" };
   }
@@ -417,10 +533,11 @@ export async function checkout(
         },
       });
     }
-
+    redirect("/dashboard");
     revalidatePath("/dashboard");
     return { success: "Successfully Checkout" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     return { error: "Something went wrong" };
   }
 }

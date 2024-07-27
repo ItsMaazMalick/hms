@@ -25,7 +25,6 @@ export default function AddFloorForm({ halls }: any) {
     defaultValues: {
       name: "",
       hall: "",
-      isAvailable: "",
       isAvailableForStudents: "",
     },
   });
@@ -50,15 +49,6 @@ export default function AddFloorForm({ halls }: any) {
                 label="Hall"
                 name="hall"
                 items={halls}
-                control={form.control}
-              />
-              <SelectInput
-                label="Available?"
-                name="isAvailable"
-                items={[
-                  { id: "FALSE", name: "FALSE" },
-                  { id: "TRUE", name: "TRUE" },
-                ]}
                 control={form.control}
               />
               <SelectInput

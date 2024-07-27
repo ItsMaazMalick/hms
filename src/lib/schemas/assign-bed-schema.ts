@@ -11,6 +11,14 @@ export const assignBedSchema = z.object({
   bed: z.string().min(1, "Bed is required"),
 });
 
+export const assignBedSchemaDialog = z.object({
+  challanNumber: z.string().min(1, "Receipt is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  advancePayment: z.coerce.number(),
+  bed: z.string().min(1, "Bed is required"),
+});
+
 export const extendDateSchema = z.object({
   endDate: z.string().min(1, "End date is required"),
   advancePayment: z.coerce.number(),

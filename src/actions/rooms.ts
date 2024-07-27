@@ -3,6 +3,8 @@
 import prisma from "@/lib/db";
 import { addRoomSchema } from "@/lib/schemas/add-room-schema";
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function saveRoom(values: z.infer<typeof addRoomSchema>) {
@@ -22,9 +24,11 @@ export async function saveRoom(values: z.infer<typeof addRoomSchema>) {
         },
       },
     });
+    redirect("/dashboard/add-bed");
     revalidatePath("/dashboard/add-room");
     return { success: "Data saved successfully" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     return { error: "Something went wrong" };
   }
 }

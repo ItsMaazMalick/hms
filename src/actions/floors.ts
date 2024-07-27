@@ -3,6 +3,8 @@
 import prisma from "@/lib/db";
 import { addFloorSchema } from "@/lib/schemas/add-floor-schema";
 import { revalidatePath } from "next/cache";
+import { isRedirectError } from "next/dist/client/components/redirect";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 
 export async function saveFloor(values: z.infer<typeof addFloorSchema>) {
@@ -22,9 +24,11 @@ export async function saveFloor(values: z.infer<typeof addFloorSchema>) {
         },
       },
     });
+    redirect("/dashboard/add-room");
     revalidatePath("/dashboard/add-floor");
     return { success: "Data saved successfully" };
   } catch (error) {
+    if (isRedirectError(error)) throw error;
     return { error: "Something went wrong" };
   }
 }

@@ -43,7 +43,6 @@ export default function AddRoomForm({ halls, floors }: any) {
       name: "",
       hall: "",
       floor: "",
-      isAvailable: "",
       isAvailableForStudents: "",
     },
   });
@@ -110,15 +109,6 @@ export default function AddRoomForm({ halls, floors }: any) {
                 label="Floor"
                 name="floor"
                 items={floorArray}
-                control={form.control}
-              />
-              <SelectInput
-                label="Available?"
-                name="isAvailable"
-                items={[
-                  { id: "FALSE", name: "FALSE" },
-                  { id: "TRUE", name: "TRUE" },
-                ]}
                 control={form.control}
               />
               <SelectInput

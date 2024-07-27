@@ -5,9 +5,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "../ui/button";
+import { BedSubmitButton } from "../button/BedSubmitButton";
+import { getPendingBookings } from "@/actions/search-registration";
 
 export default async function HallsWithRoom({ hall }: any) {
   const halls = await getHallsFloorRoomBed();
+  const pendingBookings = await getPendingBookings();
   return (
     <Accordion
       type="single"
@@ -33,14 +37,10 @@ export default async function HallsWithRoom({ hall }: any) {
                       </p>
                       <div className="grid grid-cols-4 justify-center gap-2 p-2">
                         {room.bed.map((bed: any) => (
-                          <p
-                            key={bed.id}
-                            className={`py-2 px-4 ${
-                              bed.isAvailable ? "bg-gray-300" : "bg-destructive"
-                            }  rounded-md flex justify-center items-center`}
-                          >
-                            {bed.name}
-                          </p>
+                          <BedSubmitButton
+                            bed={bed}
+                            pendingBookings={pendingBookings}
+                          />
                         ))}
                       </div>
                     </div>
