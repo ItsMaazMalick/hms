@@ -156,7 +156,7 @@ function AllocateRoomForm({ data, halls, floors, rooms, beds }: any) {
     const result = await assignBed(values, totalAmount, data.role, data.id);
     form.reset();
     setError(result?.error);
-    setSuccess(result?.success);
+    // setSuccess(result?.success);
   }
 
   const calculateAmount = () => {

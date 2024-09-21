@@ -51,7 +51,7 @@ export default async function AllocatedRooms() {
         link={<School size={35} className="p-1 rounded-md" />}
       />
       {/* TABLE */}
-      <div className="lg:w-[calc(100dvw-300px)] max-h-[550px] overflow-y-auto">
+      <div className="lg:w-[calc(100dvw-300px)] max-h-[500px] overflow-y-auto">
         <Table className="bg-white rounded-md shadow-md my-4">
           <TableHeader>
             <TableRow>

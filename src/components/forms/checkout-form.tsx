@@ -27,7 +27,13 @@ import { FormSuccess } from "./FormSuccess";
 import TextInput from "../Inputs/TextInput";
 import { calculateTotalAmount } from "@/helpers/calculate-amount";
 
-export default function CheckoutForm({ data, paidAmount }: any) {
+export default function CheckoutForm({
+  data,
+  paidAmount,
+}: {
+  data: any;
+  paidAmount: number;
+}) {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   // const [checkoutDate, setCheckoutDate] = useState<string>("");

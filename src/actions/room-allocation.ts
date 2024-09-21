@@ -31,94 +31,231 @@ export async function assignBed(
       where: { challanNumber },
     });
     if (existingChallan) {
-      return { error: "Receipt Number already exists" };
-    }
-    if (role === "student") {
-      const existingStudent = await prisma.studentRegistration.findUnique({
-        where: { id },
-      });
-      if (!existingStudent) {
-        return { error: "No student found" };
-      }
-      const assignBed = await prisma.bedAssign.create({
-        data: {
-          startDate,
-          endDate,
-          totalPayment,
-          bed: {
-            connect: { id: bed },
-          },
-          student: {
-            connect: { id },
-          },
-        },
-      });
-      await prisma.bed.update({
-        where: { id: bed },
-        data: {
-          isAvailable: false,
-        },
-      });
-      await prisma.challan.create({
-        data: {
-          challanNumber,
-          amount: advancePayment,
-          bedAssignId: assignBed.id,
-        },
-      });
-      await prisma.studentRegistration.update({
-        where: { id: existingStudent.id },
-        data: {
-          isBooked: true,
-        },
-      });
-      revalidatePath("/dashboard/assign-bed");
-      return { success: "Data saved successfully" };
-    }
-
-    if (role === "guest") {
-      const existingGuest = await prisma.guestRegistration.findUnique({
-        where: { id },
-      });
-      if (!existingGuest) {
-        return { error: "No student found" };
-      }
-      const assignBed = await prisma.bedAssign.create({
-        data: {
-          startDate,
-          endDate,
-          totalPayment,
-          bed: {
-            connect: {
-              id: bed,
+      let existingUser;
+      if (role === "student") {
+        const existingUser = await prisma.studentRegistration.findUnique({
+          where: { id },
+          select: {
+            bed: {
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 1,
+              select: {
+                totalPayment: true,
+                challans: true,
+              },
             },
           },
-          guest: {
-            connect: { id },
+        });
+
+        const prevBedBooked = existingUser?.bed[0] || null;
+        const prevTotalPayment = prevBedBooked?.totalPayment || 0;
+        const previousTotal =
+          prevBedBooked?.challans?.reduce((total, item) => {
+            const amount = item.amount;
+            return total + amount;
+          }, 0) || 0;
+        const prevRemaining = prevTotalPayment - previousTotal;
+        const existingStudent = await prisma.studentRegistration.findUnique({
+          where: { id },
+        });
+        if (!existingStudent) {
+          return { error: "No student found" };
+        }
+
+        const assignBed = await prisma.bedAssign.create({
+          data: {
+            startDate,
+            endDate,
+            totalPayment,
+            bed: {
+              connect: { id: bed },
+            },
+            student: {
+              connect: { id },
+            },
           },
-        },
-      });
-      await prisma.bed.update({
-        where: { id: bed },
-        data: {
-          isAvailable: false,
-        },
-      });
-      await prisma.challan.create({
-        data: {
-          challanNumber,
-          amount: advancePayment,
-          bedAssignId: assignBed.id,
-        },
-      });
-      await prisma.guestRegistration.update({
-        where: { id: existingGuest.id },
-        data: {
-          isBooked: true,
-        },
-      });
-      revalidatePath("/dashboard/assign-bed");
-      return { success: "Data saved successfully" };
+        });
+        await prisma.bed.update({
+          where: { id: bed },
+          data: {
+            isAvailable: false,
+          },
+        });
+        const signChangedTotal = prevRemaining * -1;
+        await prisma.challan.create({
+          data: {
+            challanNumber: `${challanNumber}-P`,
+            amount: signChangedTotal + validData.data.advancePayment,
+            bedAssignId: assignBed.id,
+          },
+        });
+        await prisma.studentRegistration.update({
+          where: { id: existingStudent.id },
+          data: {
+            isBooked: true,
+          },
+        });
+        revalidatePath("/dashboard/assign-bed");
+        return { success: "Data saved successfully" };
+      } else if (role === "guest") {
+        existingUser = await prisma.guestRegistration.findUnique({
+          where: { id },
+          select: {
+            bed: {
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 1,
+              select: {
+                totalPayment: true,
+                challans: true,
+              },
+            },
+          },
+        });
+
+        const prevBedBooked = existingUser?.bed[0] || null;
+        const prevTotalPayment = prevBedBooked?.totalPayment || 0;
+        const previousTotal =
+          prevBedBooked?.challans?.reduce((total, item) => {
+            const amount = item.amount;
+            return total + amount;
+          }, 0) || 0;
+        const prevRemaining = prevTotalPayment - previousTotal;
+
+        const existingGuest = await prisma.guestRegistration.findUnique({
+          where: { id },
+        });
+        if (!existingGuest) {
+          return { error: "No student found" };
+        }
+
+        const assignBed = await prisma.bedAssign.create({
+          data: {
+            startDate,
+            endDate,
+            totalPayment,
+            bed: {
+              connect: { id: bed },
+            },
+            student: {
+              connect: { id },
+            },
+          },
+        });
+        await prisma.bed.update({
+          where: { id: bed },
+          data: {
+            isAvailable: false,
+          },
+        });
+        const signChangedTotal = prevRemaining * -1;
+        await prisma.challan.create({
+          data: {
+            challanNumber: `${challanNumber}-P`,
+            amount: signChangedTotal + validData.data.advancePayment,
+            bedAssignId: assignBed.id,
+          },
+        });
+        await prisma.guestRegistration.update({
+          where: { id: existingGuest.id },
+          data: {
+            isBooked: true,
+          },
+        });
+        revalidatePath("/dashboard/assign-bed");
+        return { success: "Data saved successfully" };
+      }
+    } else {
+      if (role === "student") {
+        const existingStudent = await prisma.studentRegistration.findUnique({
+          where: { id },
+        });
+        if (!existingStudent) {
+          return { error: "No student found" };
+        }
+        const assignBed = await prisma.bedAssign.create({
+          data: {
+            startDate,
+            endDate,
+            totalPayment,
+            bed: {
+              connect: { id: bed },
+            },
+            student: {
+              connect: { id },
+            },
+          },
+        });
+        await prisma.bed.update({
+          where: { id: bed },
+          data: {
+            isAvailable: false,
+          },
+        });
+        await prisma.challan.create({
+          data: {
+            challanNumber,
+            amount: advancePayment,
+            bedAssignId: assignBed.id,
+          },
+        });
+        await prisma.studentRegistration.update({
+          where: { id: existingStudent.id },
+          data: {
+            isBooked: true,
+          },
+        });
+        revalidatePath("/dashboard/assign-bed");
+        return { success: "Data saved successfully" };
+      }
+
+      if (role === "guest") {
+        const existingGuest = await prisma.guestRegistration.findUnique({
+          where: { id },
+        });
+        if (!existingGuest) {
+          return { error: "No student found" };
+        }
+        const assignBed = await prisma.bedAssign.create({
+          data: {
+            startDate,
+            endDate,
+            totalPayment,
+            bed: {
+              connect: {
+                id: bed,
+              },
+            },
+            guest: {
+              connect: { id },
+            },
+          },
+        });
+        await prisma.bed.update({
+          where: { id: bed },
+          data: {
+            isAvailable: false,
+          },
+        });
+        await prisma.challan.create({
+          data: {
+            challanNumber,
+            amount: advancePayment,
+            bedAssignId: assignBed.id,
+          },
+        });
+        await prisma.guestRegistration.update({
+          where: { id: existingGuest.id },
+          data: {
+            isBooked: true,
+          },
+        });
+        revalidatePath("/dashboard/assign-bed");
+        return { success: "Data saved successfully" };
+      }
     }
   } catch (error) {
     console.log(error);
